@@ -1,4 +1,6 @@
 <!DOCTYPE html>
+<!-- v19 -->
+<!-- v18 -->
 <!-- v17 -->
 <!-- v16 -->
 <!-- v15 -->
@@ -656,11 +658,16 @@ h2.title{font-size:clamp(26px,2.8vw,40px);font-weight:700;line-height:1.1;letter
   </div>
 </section>
 
-<});
+
+<script>
+// Scroll reveal
+const els = document.querySelectorAll('.r');
+const io = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('on');io.unobserve(e.target)}});
 },{threshold:0.08});
 els.forEach(e=>io.observe(e));
 
-// Active submenu
+// Sticky submenu + active pill
 (function(){
   const ids = ['fluxo','taxas','pwa','suporte','integracoes','premios','cta'];
   const bar = document.getElementById('sticky-submenu');
@@ -669,8 +676,6 @@ els.forEach(e=>io.observe(e));
 
   function update(){
     const scrollY = window.scrollY || window.pageYOffset;
-
-    // Show/hide sticky bar
     if(heroEl){
       if(heroEl.getBoundingClientRect().bottom <= 64){
         bar.classList.add('visible');
@@ -679,8 +684,6 @@ els.forEach(e=>io.observe(e));
         return;
       }
     }
-
-    // Find active section
     let current = ids[0];
     for(const id of ids){
       const el = document.getElementById(id);
@@ -688,22 +691,15 @@ els.forEach(e=>io.observe(e));
       const offsetTop = el.getBoundingClientRect().top + scrollY;
       if(scrollY >= offsetTop - 150) current = id;
     }
-
-    // Update pills + center active one
     document.querySelectorAll('.submenu-pill').forEach(pill => {
       const isActive = pill.getAttribute('href') === '#' + current;
       pill.classList.toggle('active', isActive);
-
       if(isActive && inner){
         requestAnimationFrame(() => {
           const pillRect = pill.getBoundingClientRect();
           const innerRect = inner.getBoundingClientRect();
-          const pillCenter = pillRect.left + pillRect.width / 2;
-          const innerCenter = innerRect.left + innerRect.width / 2;
-          const offset = pillCenter - innerCenter;
-          if(Math.abs(offset) > 10){
-            inner.scrollBy({left: offset, behavior: 'smooth'});
-          }
+          const offset = (pillRect.left + pillRect.width/2) - (innerRect.left + innerRect.width/2);
+          if(Math.abs(offset) > 10) inner.scrollBy({left: offset, behavior:'smooth'});
         });
       }
     });
